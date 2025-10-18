@@ -3,10 +3,10 @@ const express = require('express');
 const { Op } = require('sequelize');
 const router = express.Router();
 
-// import the middleware — we exported both verifyToken and authenticate
+// Import the middleware
 const { verifyToken } = require('../middleware/authMiddleware');
 
-// models
+// Models
 const { User, Course, Enrollment } = require('../models');
 
 /**
@@ -25,16 +25,18 @@ router.get('/', verifyToken, async (req, res) => {
       attributes: ['id', 'name', 'email', 'role'],
     });
 
-    // Fetch enrollments including course (association must be set up in models)
-    // Use attribute name studentId (model-level) rather than DB column student_id.
-    // If your Enrollment model uses underscored and defines studentId with field: 'student_id',
-    // then use studentId here:
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Fetch enrollments including course
     const enrollments = await Enrollment.findAll({
-      where: { studentId: userId },
+      where: { studentId: userId }, // Ensure studentId is mapped correctly in the model
       include: [{ model: Course }],
     });
 
-    const courses = enrollments.map((e) => e.Course).filter(Boolean);
+    // Map courses from enrollments
+    const courses = enrollments?.map((e) => e.Course).filter(Boolean) || [];
 
     return res.status(200).json({
       success: true,

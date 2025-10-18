@@ -100,12 +100,12 @@ export const authAPI = {
 export const coursesAPI = {
   getAllCourses: async (): Promise<Course[]> => {
     const response = await api.get('/courses');
-    return extractData(response);
+    return extractData(response).courses;
   },
 
   getCourse: async (id: number): Promise<Course> => {
     const response = await api.get(`/courses/${id}`);
-    return extractData(response);
+    return extractData(response).course;
   },
 
   createCourse: async (data: { title: string; description: string }): Promise<Course> => {
@@ -132,12 +132,12 @@ export const coursesAPI = {
 export const enrollmentsAPI = {
   getEnrollments: async (): Promise<Enrollment[]> => {
     const response = await api.get('/enrollments');
-    return extractData(response);
+    return extractData(response).enrollments;
   },
 
   enrollInCourse: async (courseId: number): Promise<Enrollment> => {
     const response = await api.post('/enrollments', { course_id: courseId });
-    return extractData(response);
+    return extractData(response).enrollment;
   },
 
   unenrollFromCourse: async (courseId: number): Promise<void> => {
